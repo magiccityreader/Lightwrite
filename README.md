@@ -1,28 +1,49 @@
-<img width="654" height="413" alt="underwood_2 1" src="https://github.com/user-attachments/assets/633706f8-c6ae-47cb-aa15-1dd1230051eb" />
+# Lightwrite
 
-# Underwood-English
+Terminal word processor for Debian and derivatives (curses + RTF).
+Fork of [SilvestreParbut/Underwood](https://github.com/SilvestreParbut/Underwood)
+maintained at [magiccityreader/Lightwrite](https://github.com/magiccityreader/Lightwrite).
 
-It is a rich-text processor for the Linux console (Debian and derivatives). inspired by word processors such as WordPerfect and MS-Word 6.0 for DOS and the iconic Underwood Standard No. 5 typewriter
+Inspired by WordPerfect, MS-Word 6.0 for DOS, and the Underwood Standard No. 5.
 
-Underwood distinguishes itself from other terminal-based text editors by supporting bold, italics, underlining, page breaks, and find-and-replace functions.
+![demo](assets/screenshots/demo.gif)
 
-Its native format is .RTF, chosen for its simplicity and broad compatibility across word processors; it also supports exporting to .PDF.
+## Features
 
-It is controlled via keyboard and mouse; the trackpad or mouse wheel can be used to scroll through content, while the mouse or trackpad allows for click-and-drag text selection.
+- Bold, italic, underline, headings, page breaks, alignment
+- Native `.rtf` (also `.txt`; `.docx` / PDF via LibreOffice)
+- Mouse selection / scroll, or keyboard-only (`Shift`+arrows, `F9` menus)
+- Hunspell spell-check (optional), find/replace, bilingual UI (es/en)
 
-Licence: GNU GPL-v.3
+## Run from source
 
+```bash
+python3 src/lightwrite.py
+# or open a file:
+python3 src/lightwrite.py ~/notes/draft.rtf
+```
 
-# Underwood-Español
+Optional: `hunspell` (+ dictionaries), `xclip`/`xsel`, LibreOffice Writer.
 
-Underwood es un procesador de texto enriquecido para la consola de sistemas linux (debian y derivados) inspirado en procesadores de texto como wordperfect, MS-Word 6.0 para DOS y la icónica máquina de escribir underwood standard n°5
+## Build a `.deb` (Linux)
 
-Se diferencia de los demás editores de texto para la terminal al poseer capacidad para negrita, cursiva, subrayado, salto de página, búsqueda y reemplao de palabras.
+```bash
+./scripts/build-deb.sh
+sudo apt install ./dist/lightwrite_1.0.0_all.deb
+```
 
-Su formato nativo es .rtf, ya que es simple y altamente soportado por todos los procesadores de texto. Puede exportar como .pdf
+## Layout
 
-Se controla con teclado y ratón, el trackpad o rueda del mouse pueden hacer scroll en el contenido, el ratón o trackpad puede hacer click y arrastrar para seleccionar el texto.
+| Path | Role |
+|------|------|
+| `src/lightwrite.py` | Application |
+| `src/locale/` | Manual / About text (es + en) |
+| `packaging/` | Desktop entry, icon, Debian metadata |
+| `scripts/build-deb.sh` | Assemble `.deb` from source |
+| `assets/screenshots/` | UI screenshots |
 
-La interfaz, tiene soporte para todos los simbolos de nuestro idioma español incluyendo "ñ" "¡" "¿" y tildes. puede portarse a otros idiomas modificando la interfaz del archivo .py incluido en el código fuente.
+Release tarballs and PyInstaller/venv trees are **not** kept in git.
 
-La licencia es GNU GPL-v.3
+## License
+
+GNU GPL v3 — see [LICENSE](LICENSE). Upstream copyright Silvestre Parbut (2026).

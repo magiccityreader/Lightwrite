@@ -1,0 +1,18 @@
+Package: lightwrite
+Version: 1.0.0
+Section: editors
+Priority: optional
+Architecture: all
+Depends: python3 (>= 3.8)
+Recommends: hunspell, hunspell-es, hunspell-en-us, libreoffice-writer
+Maintainer: Magic City Reader <jr@magiccityreader.com>
+Homepage: https://github.com/magiccityreader/Lightwrite
+Description: Terminal-based word processor
+ Lightwrite is a minimalist word processor for the terminal, designed for creative writing: novels, short stories, essays, and screenplays.
+ .
+ It includes formatting (bold, italics, underline), three heading levels with a chapter map, spell-checking via Hunspell, search and replace, and export options for RTF, TXT, DOCX, and PDF.
+ .
+ It works with a mouse, or—if none is available—entirely via keyboard: selection using Shift+arrow keys and menus via F9.
+ .
+ This package is the magiccityreader fork of Silvestre Parbut's Underwood,
+ renamed Lightwrite.

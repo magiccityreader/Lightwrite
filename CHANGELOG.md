@@ -1,102 +1,81 @@
 # Changelog
 
-Todos los cambios notables en Underwood se documentan en este archivo.
+All notable changes to Lightwrite are documented here.
 
-El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
-y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/).
+Format based on [Keep a Changelog](https://keepachangelog.com/).
+This project follows [Semantic Versioning](https://semver.org/).
+
+## [1.0.0] — 2026-09-29
+
+### Changed (magiccityreader — Lightwrite)
+
+- Renamed the product from Underwood to **Lightwrite** (binary, package,
+  config dir `~/.config/lightwrite`, docs dir `~/lightwrite`).
+- Repository is a normal source tree (`src/`, `packaging/`, `scripts/`) instead of
+  shipping multi‑megabyte release tarballs that embedded a full Python venv and
+  PyInstaller binary.
+- Flatpak LibreOffice conversions no longer request `--filesystem=home`; only
+  `/tmp` and the directories of the files being converted are exposed.
+- Language switch recovery for unsaved documents uses
+  `~/.config/lightwrite/session.rtf` instead of silently overwriting
+  `~/lightwrite/documento.rtf`.
+- Save-as asks before overwriting an existing file (`s`/`y` or `n`).
+- Save / folder-creation failures catch `OSError` more narrowly on critical paths.
+
+### Notes
+
+- Based on upstream Underwood 2.6.x (headings, Hunspell, bilingual UI,
+  DOCX/PDF export). Entries below for 2.0–2.1 are from upstream Underwood;
+  intermediate 2.2–2.6 upstream notes were not published in-repo.
 
 
 ## [2.1.0] — 2026-09-26
 
-### Añadido
-- **Interfaz bilingüe**: español e inglés.
-- **Menú Idioma / Language** en la barra superior para cambiar de idioma
-  sin reiniciar el programa. La preferencia se guarda en
-  `~/.config/underwood/language` y se respeta en los siguientes arranques.
-- Manual y "Acerca de" como archivos de texto externos, traducibles sin
-  tocar el código.
-- Nuevo ícono para la versión 2.1.
-- Guardado automático del documento al cambiar de idioma, para no perder
-  cambios sin guardar.
+### Added
+- Bilingual interface (Spanish / English) with Language menu; preference stored in
+  `~/.config/lightwrite/language`.
+- Manual and About as external locale text files.
+- New icon for 2.1.
 
-### Cambiado
-- El paquete `.deb` ahora aparece en la categoría **Oficina** del menú de
-  aplicaciones, en lugar de Accesorios.
-- Descripción del paquete `.deb` bilingüe (inglés y español), para que
-  cualquier usuario pueda identificar el programa al instalarlo.
-- El arranque respeta este orden de prioridad para decidir el idioma:
-  1. Archivo `~/.config/underwood/language`
-  2. Variable de entorno `UNDERWOOD_LANG`
-  3. Variable de entorno `LANG`
-  4. Español por defecto
+### Changed
+- `.deb` appears under Office; bilingual package description.
+- Language priority: config file → `LIGHTWRITE_LANG` → `LANG` → Spanish default.
+- Autosave document when switching language so unsaved work is not lost.
 
-### Corregido
-- La selección de texto con `Ctrl+A` era lenta en documentos grandes.
-  Ahora el cálculo de la selección es de orden O(1) por carácter
-  dibujado, en lugar de O(N) como antes.
-- El arrastre con el ratón durante la selección se retrasaba en
-  documentos largos cuando había muchos eventos pendientes.
+### Fixed
+- Faster `Ctrl+A` selection on large documents.
+- Mouse-drag selection no longer stalls when many events queue up.
 
 
 ## [2.0.0] — 2026-09-25
 
-### Añadido
-- **Barra de menús superior** con soporte de ratón: Archivo, Edición,
-  Formato, Alineación, Insertar, Ayuda y Salir.
-- **Menús desplegables** con atajos de teclado visibles.
-- **Alineación de párrafos**: izquierda, centrada, derecha y justificada.
-  Conserva la alineación al pasar entre sub-líneas y exporta a RTF con
-  las directivas estándar `\ql`, `\qc`, `\qr`, `\qj`.
-- **Salto de página** (`Ctrl+K`) que se guarda como `\page` en RTF y
-  respeta LibreOffice al exportar a PDF.
-- **Explorador de archivos** interno (`Ctrl+O`) dentro de la terminal.
-- **Exportación asíncrona a PDF** con indicador de progreso (spinner
-  braille). La interfaz sigue respondiendo mientras se genera el PDF.
-- **Barra de estado inferior** con contador de palabras, formato activo
-  y mensajes temporales.
-- **Manual interno** (`Ctrl+G`) y **Acerca de** (`Ctrl+H`).
-- **Selección con ratón** y scroll con rueda / trackpad.
-- **Deshacer** (`Ctrl+Z`).
-- **Seleccionar todo** (`Ctrl+A`).
-- **Doble clic** en archivos `.rtf` desde el explorador del sistema los
-  abre directamente en Underwood (asociación MIME).
-- Paquete `.deb` con ícono propio, lanzador de escritorio y manual.
+### Added
+- Top menu bar with mouse support.
+- Paragraph alignment (left/center/right/justify) with RTF `\ql`/`\qc`/`\qr`/`\qj`.
+- Page break (`Ctrl+K`) as RTF `\page`.
+- In-terminal file browser (`Ctrl+O`).
+- Async PDF export with progress spinner.
+- Status bar (word count, active format, messages).
+- Manual (`Ctrl+G`) and About (`Ctrl+H`).
+- Mouse selection and wheel/trackpad scroll.
+- Undo (`Ctrl+Z`), Select all (`Ctrl+A`).
+- MIME association for `.rtf`.
+- Installable `.deb` with icon and desktop launcher.
 
-### Cambiado
-- El renderizado de la selección se optimiza con pre-cálculo de offsets
-  por línea, para acelerar el dibujado.
-- El uso de CPU se reduce drásticamente al detener el reporte de
-  movimiento del ratón cuando no hay interacción (modo `1002` en lugar
-  de `1003` de los códigos de reporte del terminal).
-- El ancho de pantalla se centra en 80 columnas para mejor legibilidad
-  en pantallas panorámicas.
+### Changed
+- Selection rendering optimized; mouse reporting uses mode `1002`.
+- Content width centered at 80 columns.
 
-### Corregido
-- Los caracteres hispanos (`ñ`, `á`, `¿`, `¡`, etc.) ya no se duplican
-  al leer archivos RTF generados por LibreOffice. Se maneja correctamente
-  la secuencia `\uN` seguida de su carácter de respaldo.
-- Los cambios de formato (negrita, cursiva, subrayado) dentro de grupos
-  RTF `{...}` ahora se revierten al cerrar el grupo, como indica el
-  estándar.
+### Fixed
+- Spanish characters no longer duplicated when reading LibreOffice RTF `\uN`.
+- Format changes inside RTF groups `{...}` revert correctly when groups close.
 
 
 ## [1.0.0] — 2026-09-25
 
-### Añadido
-- Primera versión pública.
-- Editor de texto enriquecido para la terminal.
-- Soporte para **negrita**, **cursiva** y **subrayado**.
-- **Búsqueda** (`Ctrl+F`) con contador de coincidencias y navegación
-  con `Enter`.
-- **Reemplazo** (`Ctrl+R`) de todas las coincidencias a la vez.
-- **Cortar, copiar y pegar** con integración al portapapeles del sistema
-  (`xclip` o `xsel`).
-- **Guardado en formato .rtf** (Rich Text Format), compatible con
-  LibreOffice Writer, Microsoft Word y otros procesadores.
-- **Exportación a PDF** (requiere LibreOffice instalado, nativo o vía
-  Flatpak).
-- Interfaz a color, con formato visible en tiempo real.
-- Paquete `.deb` instalable en Debian, Ubuntu y Linux Mint.
-
-### Notas
-- Esta versión es monolingüe (español).
+### Added
+- First public release: rich-text terminal editor.
+- Bold / italic / underline, find (`Ctrl+F`), replace (`Ctrl+R`).
+- Cut / copy / paste via `xclip` or `xsel`.
+- Save as `.rtf`; PDF export via LibreOffice.
+- Spanish UI; Debian/Ubuntu/Mint `.deb`.
