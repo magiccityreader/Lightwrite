@@ -10,7 +10,9 @@ This project follows [Semantic Versioning](https://semver.org/).
 ### Changed
 - The editor loop is split into an `EditorState` session object and handler
   modules under `src/lightwrite/handlers/` (chapters, help, browse, save-as,
-  confirms, search, mouse, keys, typing). `app.py` is the redraw/input shell.
+  confirms, search, mouse, keys, typing). Keyboard shortcuts are further
+  split into `keys_menu`, `keys_file`, `keys_format`, `keys_edit` and
+  `keys_nav`. `app.py` is the redraw/input shell.
 - Undo is an operation log: typing records inserts, and consecutive
   characters in a word undo as one step. Backspace, Delete and Enter snapshot
   only the one or two lines they touch instead of the whole document.
