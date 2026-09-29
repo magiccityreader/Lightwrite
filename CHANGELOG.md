@@ -5,6 +5,37 @@ All notable changes to Lightwrite are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/).
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] — 2026-09-29
+
+### Changed
+- Undo is an operation log: typing records inserts, and consecutive
+  characters in a word undo as one step. Backspace, Delete and Enter snapshot
+  only the one or two lines they touch instead of the whole document.
+- Line-wrap layout is cached per document version and width, so cursor moves
+  and redraws no longer re-wrap the document.
+- Quit, New and Open share one unsaved-changes prompt. A successful DOCX save
+  clears the unsaved flag.
+- `LIGHTWRITE_PROFILE=1` prints edit/spell/redraw timing totals on exit.
+
+### Added
+- GitHub Actions CI: pyflakes, unit tests, and a pty smoke test that runs the
+  real editor; `.deb` build attached to `v*` tag releases.
+- Tests for operation-log undo and the layout cache.
+
+## [1.1.0] — 2026-09-29
+
+### Changed
+- Split the monolith into a `lightwrite` Python package (`i18n`, `model`,
+  `layout`, `rtf`, `export`, `spell`, `ui_draw`, `input`, `app`).
+- Undo uses shallow line-range snapshots instead of `copy.deepcopy`.
+- Plain-text cache for spell-check / status avoids rejoining the document
+  every frame.
+- Typing can skip a full-screen erase (partial redraw of chrome).
+- Format toggles and single-line deletes avoid full cell-list round-trips.
+- Prompt before quit / New when the document has unsaved changes.
+- Unit tests for undo, cache, attrs, and RTF round-trip (`tests/`).
+- Dropped the 1.2 MB demo GIF from the repo; screenshots remain.
+
 ## [1.0.0] — 2026-09-29
 
 ### Changed (magiccityreader — Lightwrite)

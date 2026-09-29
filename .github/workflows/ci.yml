@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Lint
+        run: |
+          python -m pip install --upgrade pip pyflakes
+          python -m pyflakes src tests
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Import smoke
+        run: PYTHONPATH=src python -c "import lightwrite.app"
+      - name: Editor smoke (pty)
+        run: python tests/smoke_pty.py
+
+  deb:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build .deb
+        run: bash scripts/build-deb.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lightwrite-deb
+          path: dist/*.deb
+      - name: Attach to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 \
+            || gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file CHANGELOG.md
+          gh release upload "$GITHUB_REF_NAME" dist/*.deb --clobber
