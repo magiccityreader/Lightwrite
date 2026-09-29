@@ -31,7 +31,7 @@ Optional: `hunspell` (+ dictionaries), `xclip`/`xsel`, LibreOffice Writer.
 
 ```bash
 PYTHONPATH=src python3 -m unittest discover -s tests -v
-python3 tests/smoke_pty.py          # launches the real editor in a pty (Linux)
+pip install pyte && python3 tests/smoke_pty.py   # drives the real editor (Linux)
 LIGHTWRITE_PROFILE=1 python3 src/lightwrite.py   # timing totals on exit
 ```
 
