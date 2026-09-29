@@ -5,6 +5,19 @@ All notable changes to Lightwrite are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/).
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [2.0.0] — 2026-09-29
+
+### Changed
+- **Go + Charm rewrite.** The editor is now Bubble Tea + Lip Gloss + Bubbles.
+  Document core (`doc`, `undo`, `layout`, `rtf`) ports the 1.2 Python packages
+  with the same RTF format and keybindings.
+- Debian package ships a static amd64 Go binary (`Architecture: amd64`).
+- Python/curses 1.2.x archived under `legacy/python/` (still tested in CI).
+
+### Added
+- Lip Gloss theme (page, chrome, selection, menus).
+- `go test ./...` coverage for doc, undo, layout, RTF, and smoke checklist.
+
 ## [1.2.0] — 2026-09-29
 
 ### Changed

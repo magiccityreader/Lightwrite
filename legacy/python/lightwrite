@@ -1,0 +1,3 @@
+#!/bin/sh
+export PYTHONPATH="/usr/share${PYTHONPATH:+:$PYTHONPATH}"
+exec python3 /usr/share/lightwrite/lightwrite.py "$@"

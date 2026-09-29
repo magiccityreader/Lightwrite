@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build lightwrite_VERSION_all.deb from the source tree (run on Linux/Debian).
+# Build lightwrite_VERSION_amd64.deb from the Go binary (run on Linux).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -14,28 +14,20 @@ trap cleanup EXIT
 mkdir -p \
   "$PKG_ROOT/DEBIAN" \
   "$PKG_ROOT/usr/bin" \
-  "$PKG_ROOT/usr/share/lightwrite" \
   "$PKG_ROOT/usr/share/applications" \
   "$PKG_ROOT/usr/share/pixmaps" \
   "$PKG_ROOT/usr/share/doc/lightwrite" \
   "$DIST"
 
-install -m 0755 "$ROOT/packaging/debian/postinst" "$PKG_ROOT/DEBIAN/postinst"
-install -m 0644 "$ROOT/packaging/debian/control" "$PKG_ROOT/DEBIAN/control"
-
-# Python package under /usr/share/lightwrite/
-cp -a "$ROOT/src/lightwrite" "$PKG_ROOT/usr/share/lightwrite/lightwrite"
-# Drop bytecode if any
-find "$PKG_ROOT/usr/share/lightwrite" -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null || true
-install -m 0644 "$ROOT/src/lightwrite.py" "$PKG_ROOT/usr/share/lightwrite/lightwrite.py"
-
-# Launcher: put /usr/share on PYTHONPATH so `lightwrite` package resolves
-cat > "$PKG_ROOT/usr/bin/lightwrite" <<'EOF'
-#!/bin/sh
-export PYTHONPATH="/usr/share${PYTHONPATH:+:$PYTHONPATH}"
-exec python3 /usr/share/lightwrite/lightwrite.py "$@"
-EOF
+export CGO_ENABLED=0
+GOOS=linux GOARCH=amd64 go build -C "$ROOT/go" -ldflags="-s -w" \
+  -o "$PKG_ROOT/usr/bin/lightwrite" ./cmd/lightwrite
 chmod 0755 "$PKG_ROOT/usr/bin/lightwrite"
+
+install -m 0644 "$ROOT/packaging/debian/control" "$PKG_ROOT/DEBIAN/control"
+if [[ -f "$ROOT/packaging/debian/postinst" ]]; then
+  install -m 0755 "$ROOT/packaging/debian/postinst" "$PKG_ROOT/DEBIAN/postinst"
+fi
 
 install -m 0644 "$ROOT/packaging/lightwrite.desktop" "$PKG_ROOT/usr/share/applications/lightwrite.desktop"
 install -m 0644 "$ROOT/packaging/lightwrite.png" "$PKG_ROOT/usr/share/pixmaps/lightwrite.png"
@@ -48,6 +40,6 @@ if ! grep -q '^Installed-Size:' "$PKG_ROOT/DEBIAN/control"; then
   printf 'Installed-Size: %s\n' "$INSTALLED_SIZE" >> "$PKG_ROOT/DEBIAN/control"
 fi
 
-OUT="$DIST/lightwrite_${VERSION}_all.deb"
+OUT="$DIST/lightwrite_${VERSION}_amd64.deb"
 dpkg-deb --build --root-owner-group "$PKG_ROOT" "$OUT"
 echo "Built $OUT"

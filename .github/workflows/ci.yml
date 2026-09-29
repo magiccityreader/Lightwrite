@@ -7,7 +7,21 @@ on:
   pull_request:
 
 jobs:
-  test:
+  go-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - name: Go tests
+        working-directory: go
+        run: go test ./...
+      - name: Build
+        working-directory: go
+        run: go build -o ../dist/lightwrite ./cmd/lightwrite
+
+  python-legacy:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -21,23 +35,30 @@ jobs:
       - name: Install test tools
         run: python -m pip install --upgrade pip pyflakes pyte
       - name: Lint
+        working-directory: legacy/python
         run: python -m pyflakes src tests
       - name: Unit tests
-        run: python -m unittest discover -s tests -v
+        working-directory: legacy/python
+        run: PYTHONPATH=src python -m unittest discover -s tests -v
       - name: Import smoke
+        working-directory: legacy/python
         run: PYTHONPATH=src python -c "import lightwrite.app"
       - name: Editor smoke (pty)
+        working-directory: legacy/python
         run: python tests/smoke_pty.py
         timeout-minutes: 5
 
   deb:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: test
+    needs: [go-test]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
       - name: Build .deb
         run: bash scripts/build-deb.sh
       - uses: actions/upload-artifact@v4

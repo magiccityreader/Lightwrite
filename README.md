@@ -1,67 +1,60 @@
 # Lightwrite
 
-Terminal word processor for Debian and derivatives (curses + RTF).
-Fork of [SilvestreParbut/Underwood](https://github.com/SilvestreParbut/Underwood)
-maintained at [magiccityreader/Lightwrite](https://github.com/magiccityreader/Lightwrite).
+A terminal word processor for creative writing — novels, essays, scripts.
 
-Inspired by WordPerfect, MS-Word 6.0 for DOS, and the Underwood Standard No. 5.
+**2.0** is a Go rewrite on the [Charm](https://charm.sh) stack (Bubble Tea, Lip Gloss, Bubbles).
+The previous Python/curses app lives under [`legacy/python/`](legacy/python/).
 
-![start](assets/screenshots/start.png)
+## Install (Linux `.deb`)
 
-## Features
-
-- Bold, italic, underline, headings, page breaks, alignment
-- Native `.rtf` (also `.txt`; `.docx` / PDF via LibreOffice)
-- Mouse selection / scroll, or keyboard-only (`Shift`+arrows, `F9` menus)
-- Hunspell spell-check (optional), find/replace, bilingual UI (es/en)
+```bash
+./scripts/build-deb.sh
+sudo apt install ./dist/lightwrite_2.0.0_amd64.deb
+```
 
 ## Run from source
 
 ```bash
-python3 src/lightwrite.py
-# or:
-PYTHONPATH=src python3 -m lightwrite
-# open a file:
-python3 src/lightwrite.py ~/notes/draft.rtf
+cd go
+go run ./cmd/lightwrite [file.rtf]
+# or
+go build -o ../dist/lightwrite ./cmd/lightwrite
+../dist/lightwrite
 ```
+
+Requires a modern terminal (Windows Terminal + WSL, iTerm, GNOME Terminal, etc.).
 
 Optional: `hunspell` (+ dictionaries), `xclip`/`xsel`, LibreOffice Writer.
 
 ## Tests
 
 ```bash
-PYTHONPATH=src python3 -m unittest discover -s tests -v
-pip install pyte && python3 tests/smoke_pty.py   # drives the real editor (Linux)
-LIGHTWRITE_PROFILE=1 python3 src/lightwrite.py   # timing totals on exit
+cd go && go test ./...
 ```
 
-CI (GitHub Actions) runs pyflakes, the unit tests, and the pty smoke test on
-Python 3.8 and 3.12. Pushing a `v*` tag also builds the `.deb` and attaches it
-to the release.
-
-## Build a `.deb` (Linux)
+Legacy Python suite (still in CI):
 
 ```bash
-./scripts/build-deb.sh
-sudo apt install ./dist/lightwrite_1.2.0_all.deb
+cd legacy/python
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+pip install pyte && python3 tests/smoke_pty.py
 ```
 
 ## Layout
 
 | Path | Role |
 |------|------|
-| `src/lightwrite.py` | Entrypoint |
-| `src/lightwrite/` | Application package |
-| `src/lightwrite/handlers/` | Modal and input handlers |
-| `src/lightwrite/session.py` | `EditorState` shared by the loop |
-| `src/lightwrite/locale/` | Manual / About text (es + en) |
+| `go/cmd/lightwrite` | Entrypoint |
+| `go/internal/doc` | Document model |
+| `go/internal/undo` | Operation-log undo |
+| `go/internal/layout` | Line wrap + cache |
+| `go/internal/rtf` | RTF load/save |
+| `go/internal/docio` | Files + LibreOffice export |
+| `go/internal/ui` | Bubble Tea shell |
+| `go/internal/i18n` | Spanish / English |
+| `legacy/python/` | 1.2.x curses implementation |
 | `packaging/` | Desktop entry, icon, Debian metadata |
-| `scripts/build-deb.sh` | Assemble `.deb` from source |
-| `tests/` | Unit tests (no curses) + pty smoke test |
-| `.github/workflows/ci.yml` | Lint, tests, smoke; `.deb` on tags |
-| `assets/screenshots/` | UI screenshots |
-
-Release tarballs and PyInstaller/venv trees are **not** kept in git.
+| `scripts/build-deb.sh` | Assemble `.deb` from Go binary |
 
 ## License
 
