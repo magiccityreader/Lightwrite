@@ -52,6 +52,8 @@ sudo apt install ./dist/lightwrite_1.2.0_all.deb
 |------|------|
 | `src/lightwrite.py` | Entrypoint |
 | `src/lightwrite/` | Application package |
+| `src/lightwrite/handlers/` | Modal and input handlers |
+| `src/lightwrite/session.py` | `EditorState` shared by the loop |
 | `src/lightwrite/locale/` | Manual / About text (es + en) |
 | `packaging/` | Desktop entry, icon, Debian metadata |
 | `scripts/build-deb.sh` | Assemble `.deb` from source |

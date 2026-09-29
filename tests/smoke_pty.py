@@ -425,6 +425,20 @@ def scenario_new_document_prompt(new):
     s.quit_clean(discard=True)
 
 
+def scenario_copy_paste(new):
+    """Clipboard round-trip keeps rich text internally."""
+    s = new()
+    s.type("copy me")
+    s.send(SELECT_ALL, b"\x03")         # Ctrl+C
+    s.send(NEW)
+    s.expect("(y/n)")
+    s.send(b"y\r")
+    s.expect("New document")
+    s.send(b"\x16")                     # Ctrl+V
+    s.expect("copy me")
+    s.quit_clean(discard=True)
+
+
 def scenario_page_break_and_long_document(new):
     """A page break plus enough lines to scroll does not break redraw."""
     s = new()
@@ -466,6 +480,7 @@ SCENARIOS = [
     ("replace_all", scenario_replace_all),
     ("modal_screens", scenario_modal_screens),
     ("new_document", scenario_new_document_prompt),
+    ("copy_paste", scenario_copy_paste),
     ("page_break_long_doc", scenario_page_break_and_long_document),
     ("profile_output", scenario_profile_output),
 ]

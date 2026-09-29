@@ -8,6 +8,9 @@ This project follows [Semantic Versioning](https://semver.org/).
 ## [1.2.0] — 2026-09-29
 
 ### Changed
+- The editor loop is split into an `EditorState` session object and handler
+  modules under `src/lightwrite/handlers/` (chapters, help, browse, save-as,
+  confirms, search, mouse, keys, typing). `app.py` is the redraw/input shell.
 - Undo is an operation log: typing records inserts, and consecutive
   characters in a word undo as one step. Backspace, Delete and Enter snapshot
   only the one or two lines they touch instead of the whole document.
@@ -18,8 +21,8 @@ This project follows [Semantic Versioning](https://semver.org/).
 - `LIGHTWRITE_PROFILE=1` prints edit/spell/redraw timing totals on exit.
 
 ### Added
-- GitHub Actions CI: pyflakes, unit tests, and a pty smoke test that runs the
-  real editor; `.deb` build attached to `v*` tag releases.
+- GitHub Actions CI: pyflakes, unit tests, and a pyte-backed pty smoke suite
+  (16 scenarios) that drives the real editor; `.deb` build on `v*` tags.
 - Tests for operation-log undo and the layout cache.
 
 ## [1.1.0] — 2026-09-29
